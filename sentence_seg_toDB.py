@@ -1,5 +1,5 @@
-import re
 #import套件
+import re
 from asyncio.windows_events import NULL
 from csv import reader
 from distutils.util import execute
@@ -11,6 +11,7 @@ import pandas as pd
 import csv
 import pymysql
 
+df = {'word':[]}
 db_conn = pymysql.connect(host='127.0.0.1',database='fakenews',user='root',password='1234')
 cursor=db_conn.cursor()
 
@@ -27,10 +28,12 @@ for i in sentences:
     count=count+1
     tup=(count,s,None,None,2)
     new_list.append(tup)
+    df['word'].append(s)
 insert="insert into sentence(sentence_number,sentence_content,sentence_p_value,sentence_h_value,source_comment_id) values(%s,%s,%s,%s,%s)"
 cursor.executemany(insert, new_list)
 db_conn.commit()
-
+df = pd.DataFrame.from_dict(df) # 直的
+df.to_csv("斷句後存的表.csv",index = False,encoding='utf-8-sig')
 # print('\n'.join(sentences)) #幫你轉成string
 # print(new_list)
 
